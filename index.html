@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#111827">
   <meta name="description" content="Visualizador de PDFs para cifras, partituras e repertórios.">
-  <title>CifraView — Abrir PDF</title>
+  <title>CifraView — Visualizador de PDF</title>
   <style>
     :root {
       color-scheme: light;
@@ -19,25 +19,31 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background:
-        radial-gradient(circle at top, rgba(59, 130, 246, 0.14), transparent 36%),
-        #f8fafc;
+      background: #e5e7eb;
       color: #111827;
     }
 
-    main {
+    button,
+    input {
+      font: inherit;
+    }
+
+    .welcome {
       min-height: 100vh;
       display: grid;
       place-items: center;
       padding: 24px;
+      background:
+        radial-gradient(circle at top, rgba(59, 130, 246, 0.14), transparent 36%),
+        #f8fafc;
     }
 
-    .card {
+    .welcome-card {
       width: min(100%, 560px);
       padding: clamp(28px, 6vw, 52px);
       border: 1px solid #e5e7eb;
       border-radius: 24px;
-      background: rgba(255, 255, 255, 0.94);
+      background: rgba(255, 255, 255, 0.96);
       box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
       text-align: center;
     }
@@ -61,7 +67,7 @@
       letter-spacing: -0.04em;
     }
 
-    p {
+    .welcome-card p {
       margin: 18px auto 28px;
       max-width: 420px;
       color: #64748b;
@@ -69,51 +75,41 @@
       line-height: 1.6;
     }
 
-    .open-button {
-      width: 100%;
-      min-height: 56px;
+    .primary-button,
+    .secondary-button {
+      min-height: 48px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      border: 0;
-      border-radius: 14px;
-      background: #111827;
-      color: #ffffff;
-      font: inherit;
-      font-size: 1.05rem;
+      border-radius: 12px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .primary-button {
+      width: 100%;
+      min-height: 56px;
+      border: 0;
+      background: #111827;
+      color: #ffffff;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.2);
     }
 
-    .open-button:hover {
-      background: #1f2937;
+    .primary-button:hover,
+    .secondary-button:hover {
       transform: translateY(-1px);
     }
 
-    .open-button:active {
-      transform: translateY(0);
-    }
-
-    .open-button:focus-visible {
-      outline: 3px solid rgba(37, 99, 235, 0.35);
-      outline-offset: 4px;
-    }
-
-    .file-status {
-      min-height: 24px;
-      margin-top: 16px;
-      color: #475569;
-      font-size: 0.92rem;
-      overflow-wrap: anywhere;
+    .primary-button:hover {
+      background: #1f2937;
     }
 
     .privacy-note {
-      margin: 20px 0 0;
-      color: #94a3b8;
-      font-size: 0.8rem;
+      margin: 20px 0 0 !important;
+      color: #94a3b8 !important;
+      font-size: 0.8rem !important;
     }
 
     input[type="file"] {
@@ -128,58 +124,291 @@
       border: 0;
     }
 
-    @media (max-width: 480px) {
-      main {
+    .app {
+      min-height: 100vh;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(17, 24, 39, 0.96);
+      color: #ffffff;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+    }
+
+    .brand {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .brand strong,
+    .brand span {
+      display: block;
+    }
+
+    .brand strong {
+      font-size: 1rem;
+    }
+
+    .brand span {
+      margin-top: 2px;
+      color: #cbd5e1;
+      font-size: 0.78rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .secondary-button {
+      flex: 0 0 auto;
+      min-height: 42px;
+      padding: 0 14px;
+      border: 1px solid #4b5563;
+      background: #1f2937;
+      color: #ffffff;
+    }
+
+    .status {
+      padding: 16px;
+      text-align: center;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .status.error {
+      color: #b91c1c;
+    }
+
+    .pdf-viewer {
+      width: min(100%, 980px);
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .pdf-page {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      border-radius: 12px;
+      background: #cbd5e1;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.16);
+    }
+
+    .page-number {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 2;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(17, 24, 39, 0.78);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    canvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      background: #ffffff;
+      box-shadow: 0 3px 12px rgba(15, 23, 42, 0.18);
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .welcome {
         padding: 16px;
       }
 
-      .card {
+      .welcome-card {
         border-radius: 20px;
+      }
+
+      .toolbar {
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .secondary-button {
+        padding: 0 11px;
+        font-size: 0.88rem;
+      }
+
+      .pdf-viewer {
+        padding: 10px;
+        gap: 10px;
+      }
+
+      .pdf-page {
+        padding: 5px;
+        border-radius: 8px;
+      }
+
+      .page-number {
+        top: 10px;
+        left: 10px;
       }
     }
   </style>
 </head>
 <body>
-  <main>
-    <section class="card" aria-labelledby="page-title">
+  <section id="welcome" class="welcome">
+    <div class="welcome-card">
       <div class="icon" aria-hidden="true">♫</div>
-      <h1 id="page-title">CifraView</h1>
-      <p>Abra uma cifra ou partitura em PDF para começar.</p>
+      <h1>CifraView</h1>
+      <p>Abra uma cifra ou partitura em PDF para visualizar todas as páginas.</p>
 
       <input id="pdf-input" type="file" accept="application/pdf,.pdf">
-      <button id="open-pdf-button" class="open-button" type="button">
+      <button id="open-pdf-button" class="primary-button" type="button">
         <span aria-hidden="true">📄</span>
         Abrir PDF
       </button>
 
-      <div id="file-status" class="file-status" aria-live="polite"></div>
       <p class="privacy-note">O arquivo permanece no seu aparelho.</p>
-    </section>
-  </main>
+    </div>
+  </section>
 
-  <script>
+  <section id="app" class="app" hidden>
+    <header class="toolbar">
+      <div class="brand">
+        <strong>CifraView</strong>
+        <span id="file-name">Nenhum arquivo</span>
+      </div>
+
+      <button id="change-pdf-button" class="secondary-button" type="button">
+        Trocar PDF
+      </button>
+    </header>
+
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+    <main id="pdf-viewer" class="pdf-viewer" aria-label="Páginas do PDF"></main>
+  </section>
+
+  <script type="module">
+    import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs";
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs";
+
+    const welcome = document.getElementById("welcome");
+    const app = document.getElementById("app");
     const pdfInput = document.getElementById("pdf-input");
     const openPdfButton = document.getElementById("open-pdf-button");
-    const fileStatus = document.getElementById("file-status");
+    const changePdfButton = document.getElementById("change-pdf-button");
+    const fileName = document.getElementById("file-name");
+    const status = document.getElementById("status");
+    const pdfViewer = document.getElementById("pdf-viewer");
+
+    let currentDocument = null;
 
     openPdfButton.addEventListener("click", () => pdfInput.click());
+    changePdfButton.addEventListener("click", () => pdfInput.click());
 
-    pdfInput.addEventListener("change", () => {
+    pdfInput.addEventListener("change", async () => {
       const file = pdfInput.files?.[0];
 
-      if (!file) {
-        fileStatus.textContent = "";
-        return;
-      }
+      if (!file) return;
 
       if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
-        fileStatus.textContent = "Selecione um arquivo PDF válido.";
+        showError("Selecione um arquivo PDF válido.");
         pdfInput.value = "";
         return;
       }
 
-      fileStatus.textContent = `Arquivo selecionado: ${file.name}`;
+      await loadPdf(file);
+      pdfInput.value = "";
     });
+
+    async function loadPdf(file) {
+      try {
+        welcome.hidden = true;
+        app.hidden = false;
+        pdfViewer.replaceChildren();
+        status.classList.remove("error");
+        status.textContent = "Carregando PDF...";
+        fileName.textContent = file.name;
+
+        if (currentDocument) {
+          await currentDocument.destroy();
+          currentDocument = null;
+        }
+
+        const fileData = new Uint8Array(await file.arrayBuffer());
+        currentDocument = await pdfjsLib.getDocument({ data: fileData }).promise;
+
+        status.textContent = `Renderizando 0 de ${currentDocument.numPages} páginas...`;
+
+        for (let pageNumber = 1; pageNumber <= currentDocument.numPages; pageNumber += 1) {
+          await renderPage(currentDocument, pageNumber);
+          status.textContent = `Renderizando ${pageNumber} de ${currentDocument.numPages} páginas...`;
+        }
+
+        status.textContent = `${currentDocument.numPages} página${currentDocument.numPages === 1 ? "" : "s"} carregada${currentDocument.numPages === 1 ? "" : "s"}.`;
+      } catch (error) {
+        console.error(error);
+        showError("Não foi possível abrir este PDF. Tente outro arquivo.");
+      }
+    }
+
+    async function renderPage(pdfDocument, pageNumber) {
+      const page = await pdfDocument.getPage(pageNumber);
+      const initialViewport = page.getViewport({ scale: 1 });
+      const availableWidth = Math.max(280, Math.min(pdfViewer.clientWidth - 36, 900));
+      const scale = availableWidth / initialViewport.width;
+      const viewport = page.getViewport({ scale });
+      const outputScale = Math.min(window.devicePixelRatio || 1, 2);
+
+      const pageContainer = document.createElement("article");
+      pageContainer.className = "pdf-page";
+      pageContainer.setAttribute("aria-label", `Página ${pageNumber}`);
+
+      const pageLabel = document.createElement("span");
+      pageLabel.className = "page-number";
+      pageLabel.textContent = `Página ${pageNumber}`;
+
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d", { alpha: false });
+
+      canvas.width = Math.floor(viewport.width * outputScale);
+      canvas.height = Math.floor(viewport.height * outputScale);
+      canvas.style.width = `${Math.floor(viewport.width)}px`;
+      canvas.style.height = `${Math.floor(viewport.height)}px`;
+
+      pageContainer.append(pageLabel, canvas);
+      pdfViewer.appendChild(pageContainer);
+
+      await page.render({
+        canvasContext: context,
+        viewport,
+        transform: outputScale === 1 ? null : [outputScale, 0, 0, outputScale, 0, 0],
+        background: "rgb(255, 255, 255)"
+      }).promise;
+
+      page.cleanup();
+    }
+
+    function showError(message) {
+      app.hidden = false;
+      welcome.hidden = true;
+      status.classList.add("error");
+      status.textContent = message;
+    }
   </script>
 </body>
 </html>
