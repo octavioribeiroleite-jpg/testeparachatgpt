@@ -10,13 +10,11 @@
     :root {
       --columns: 1;
       --page-width: 100%;
-      color-scheme: light;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: light;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -25,20 +23,15 @@
       color: #111827;
     }
 
-    button,
-    input,
-    select {
-      font: inherit;
-    }
+    button, input, select { font: inherit; }
+    [hidden] { display: none !important; }
 
     .welcome {
       min-height: 100vh;
       display: grid;
       place-items: center;
       padding: 24px;
-      background:
-        radial-gradient(circle at top, rgba(59, 130, 246, 0.14), transparent 36%),
-        #f8fafc;
+      background: radial-gradient(circle at top, rgba(59, 130, 246, 0.14), transparent 36%), #f8fafc;
     }
 
     .welcome-card {
@@ -74,40 +67,37 @@
       margin: 18px auto 28px;
       max-width: 420px;
       color: #64748b;
-      font-size: 1rem;
       line-height: 1.6;
     }
 
+    input[type="file"] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
     .primary-button,
-    .secondary-button {
-      min-height: 48px;
+    .toolbar-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
       border-radius: 12px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform 160ms ease, background 160ms ease;
     }
 
     .primary-button {
       width: 100%;
       min-height: 56px;
+      gap: 10px;
       border: 0;
       background: #111827;
-      color: #ffffff;
+      color: #fff;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.2);
-    }
-
-    .primary-button:hover,
-    .secondary-button:hover,
-    .control-button:hover {
-      transform: translateY(-1px);
-    }
-
-    .primary-button:hover {
-      background: #1f2937;
     }
 
     .privacy-note {
@@ -116,21 +106,7 @@
       font-size: 0.8rem !important;
     }
 
-    input[type="file"] {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    .app {
-      min-height: 100vh;
-    }
+    .app { min-height: 100vh; }
 
     .toolbar {
       position: sticky;
@@ -138,12 +114,12 @@
       z-index: 10;
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      background: rgba(17, 24, 39, 0.96);
-      color: #ffffff;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(17, 24, 39, 0.97);
+      color: #fff;
       backdrop-filter: blur(12px);
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18);
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.2);
     }
 
     .brand {
@@ -152,18 +128,12 @@
     }
 
     .brand strong,
-    .brand span {
-      display: block;
-    }
-
-    .brand strong {
-      font-size: 1rem;
-    }
+    .brand span { display: block; }
 
     .brand span {
       margin-top: 2px;
       color: #cbd5e1;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -172,106 +142,100 @@
     .toolbar-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 7px;
+    }
+
+    .toolbar-button {
+      min-height: 38px;
+      padding: 0 12px;
+      border: 1px solid #4b5563;
+      background: #1f2937;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .back-button {
+      gap: 6px;
+      background: #111827;
     }
 
     .column-control,
     .step-control {
-      min-height: 42px;
+      min-height: 38px;
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 0 7px;
+      gap: 5px;
+      padding: 0 6px;
       border: 1px solid #4b5563;
-      border-radius: 12px;
+      border-radius: 10px;
       background: #1f2937;
       color: #e5e7eb;
-      font-size: 0.86rem;
+      font-size: 0.82rem;
       font-weight: 700;
     }
 
     .control-label {
-      margin-right: 2px;
       color: #d1d5db;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
     }
 
     .column-control select {
-      min-width: 56px;
-      min-height: 30px;
-      padding: 2px 8px;
+      min-width: 52px;
+      min-height: 28px;
+      padding: 2px 7px;
       border: 1px solid #6b7280;
-      border-radius: 8px;
+      border-radius: 7px;
       background: #111827;
-      color: #ffffff;
-      cursor: pointer;
+      color: #fff;
     }
 
     .control-button {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       display: grid;
       place-items: center;
       border: 1px solid #6b7280;
-      border-radius: 8px;
+      border-radius: 7px;
       background: #111827;
-      color: #ffffff;
-      font-size: 1.15rem;
+      color: #fff;
+      font-size: 1.1rem;
       font-weight: 800;
-      line-height: 1;
       cursor: pointer;
-      transition: transform 160ms ease, background 160ms ease, opacity 160ms ease;
-    }
-
-    .control-button:hover {
-      background: #374151;
     }
 
     .control-button:disabled,
     .column-control select:disabled {
-      cursor: not-allowed;
       opacity: 0.5;
+      cursor: not-allowed;
     }
 
     .control-value {
-      min-width: 48px;
+      min-width: 44px;
       text-align: center;
       font-variant-numeric: tabular-nums;
     }
 
-    .secondary-button {
-      flex: 0 0 auto;
-      min-height: 42px;
-      padding: 0 14px;
-      border: 1px solid #4b5563;
-      background: #1f2937;
-      color: #ffffff;
-    }
-
     .status {
-      padding: 5px 8px;
+      padding: 4px 7px;
       text-align: center;
       color: #475569;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
     }
 
-    .status.error {
-      color: #b91c1c;
-    }
+    .status.error { color: #b91c1c; }
 
     .pdf-viewer {
       width: 100%;
       margin: 0;
-      padding: 2px;
+      padding: 1px;
       display: grid;
       grid-template-columns: repeat(var(--columns), var(--page-width));
       align-items: start;
       justify-content: start;
-      gap: 2px;
+      gap: 1px;
       overflow-x: auto;
       overscroll-behavior-inline: contain;
-      scroll-behavior: smooth;
     }
 
     .pdf-page {
@@ -281,21 +245,19 @@
       display: flex;
       justify-content: center;
       padding: 1px;
-      border-radius: 2px;
       background: #cbd5e1;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.14);
     }
 
     .page-number {
       position: absolute;
-      top: 5px;
-      left: 5px;
+      top: 4px;
+      left: 4px;
       z-index: 2;
       padding: 3px 6px;
       border-radius: 999px;
       background: rgba(17, 24, 39, 0.78);
-      color: #ffffff;
-      font-size: 0.68rem;
+      color: #fff;
+      font-size: 0.66rem;
       font-weight: 700;
       pointer-events: none;
     }
@@ -304,23 +266,12 @@
       display: block;
       max-width: 100%;
       height: auto;
-      background: #ffffff;
-      box-shadow: none;
-    }
-
-    [hidden] {
-      display: none !important;
+      background: #fff;
     }
 
     @media (max-width: 1100px) {
-      .toolbar {
-        flex-wrap: wrap;
-      }
-
-      .brand {
-        flex-basis: 100%;
-      }
-
+      .toolbar { flex-wrap: wrap; }
+      .brand { flex-basis: 0; }
       .toolbar-actions {
         width: 100%;
         flex-wrap: wrap;
@@ -328,111 +279,43 @@
     }
 
     @media (max-width: 640px) {
-      .welcome {
-        padding: 16px;
-      }
-
-      .welcome-card {
-        border-radius: 20px;
-      }
-
-      .toolbar {
-        gap: 8px;
-        padding: 9px;
-      }
-
-      .toolbar-actions {
-        gap: 7px;
-      }
-
+      .welcome { padding: 16px; }
+      .toolbar { gap: 6px; padding: 7px; }
+      .brand { order: 2; }
+      .back-button { order: 1; }
+      .toolbar-actions { order: 3; gap: 5px; }
       .column-control,
-      .step-control {
-        flex: 1 1 145px;
-        justify-content: space-between;
-      }
-
-      .secondary-button {
-        width: 100%;
-        padding: 0 11px;
-        font-size: 0.88rem;
-      }
-
-      .status {
-        padding: 3px 6px;
-        font-size: 0.75rem;
-      }
-
-      .pdf-viewer {
-        padding: 1px;
-        gap: 1px;
-      }
-
-      .pdf-page {
-        padding: 1px;
-        border-radius: 1px;
-      }
-
-      .page-number {
-        top: 4px;
-        left: 4px;
-      }
+      .step-control { flex: 1 1 140px; justify-content: space-between; }
+      .change-button { flex: 1 1 100%; }
+      .status { padding: 2px 5px; font-size: 0.7rem; }
     }
 
     @media (orientation: landscape) and (max-height: 620px) {
       .toolbar {
         flex-wrap: nowrap;
-        gap: 6px;
-        padding: 6px 8px;
+        padding: 5px 7px;
       }
 
       .brand {
-        flex: 0 1 180px;
-        max-width: 180px;
+        flex: 0 1 150px;
+        max-width: 150px;
+        order: initial;
       }
 
-      .brand span {
-        font-size: 0.68rem;
-      }
+      .back-button { order: initial; }
 
       .toolbar-actions {
         width: auto;
         flex: 1;
         flex-wrap: nowrap;
-        gap: 5px;
         overflow-x: auto;
-        scrollbar-width: none;
+        order: initial;
       }
 
-      .toolbar-actions::-webkit-scrollbar {
-        display: none;
-      }
-
+      .control-label { display: none; }
       .column-control,
-      .step-control {
-        min-height: 38px;
-        flex: 0 0 auto;
-      }
-
-      .control-label {
-        display: none;
-      }
-
-      .secondary-button {
-        width: auto;
-        min-height: 38px;
-        padding: 0 10px;
-        white-space: nowrap;
-      }
-
-      .status {
-        padding: 2px 5px;
-        font-size: 0.7rem;
-      }
-
-      .pdf-viewer {
-        padding: 1px;
-        gap: 1px;
-      }
+      .step-control { flex: 0 0 auto; }
+      .change-button { flex: 0 0 auto; }
     }
   </style>
 </head>
@@ -442,19 +325,22 @@
       <div class="icon" aria-hidden="true">♫</div>
       <h1>CifraView</h1>
       <p>Abra uma cifra ou partitura em PDF para visualizar todas as páginas.</p>
-
       <input id="pdf-input" type="file" accept="application/pdf,.pdf">
       <button id="open-pdf-button" class="primary-button" type="button">
         <span aria-hidden="true">📄</span>
         Abrir PDF
       </button>
-
       <p class="privacy-note">O arquivo permanece no seu aparelho.</p>
     </div>
   </section>
 
   <section id="app" class="app" hidden>
     <header class="toolbar">
+      <button id="back-button" class="toolbar-button back-button" type="button" aria-label="Voltar para a tela inicial">
+        <span aria-hidden="true">←</span>
+        Voltar
+      </button>
+
       <div class="brand">
         <strong>CifraView</strong>
         <span id="file-name">Nenhum arquivo</span>
@@ -463,16 +349,16 @@
       <div class="toolbar-actions">
         <div class="step-control" aria-label="Controle de zoom">
           <span class="control-label">Zoom</span>
-          <button id="zoom-out-button" class="control-button" type="button" aria-label="Diminuir zoom" title="Diminuir zoom">−</button>
+          <button id="zoom-out-button" class="control-button" type="button" aria-label="Diminuir zoom">−</button>
           <span id="zoom-value" class="control-value">100%</span>
-          <button id="zoom-in-button" class="control-button" type="button" aria-label="Aumentar zoom" title="Aumentar zoom">+</button>
+          <button id="zoom-in-button" class="control-button" type="button" aria-label="Aumentar zoom">+</button>
         </div>
 
         <div class="step-control" aria-label="Controle de largura das páginas">
           <span class="control-label">Largura</span>
-          <button id="width-out-button" class="control-button" type="button" aria-label="Estreitar páginas" title="Estreitar páginas">−</button>
+          <button id="width-out-button" class="control-button" type="button" aria-label="Estreitar páginas">−</button>
           <span id="width-value" class="control-value">100%</span>
-          <button id="width-in-button" class="control-button" type="button" aria-label="Alargar páginas" title="Alargar páginas">+</button>
+          <button id="width-in-button" class="control-button" type="button" aria-label="Alargar páginas">+</button>
         </div>
 
         <label class="column-control" for="column-select">
@@ -487,9 +373,7 @@
           </select>
         </label>
 
-        <button id="change-pdf-button" class="secondary-button" type="button">
-          Trocar PDF
-        </button>
+        <button id="change-pdf-button" class="toolbar-button change-button" type="button">Trocar PDF</button>
       </div>
     </header>
 
@@ -507,6 +391,7 @@
     const app = document.getElementById("app");
     const pdfInput = document.getElementById("pdf-input");
     const openPdfButton = document.getElementById("open-pdf-button");
+    const backButton = document.getElementById("back-button");
     const changePdfButton = document.getElementById("change-pdf-button");
     const columnSelect = document.getElementById("column-select");
     const zoomOutButton = document.getElementById("zoom-out-button");
@@ -521,10 +406,9 @@
 
     const MIN_ZOOM = 0.5;
     const MAX_ZOOM = 2;
-    const ZOOM_STEP = 0.1;
+    const STEP = 0.1;
     const MIN_WIDTH = 0.7;
     const MAX_WIDTH = 1.8;
-    const WIDTH_STEP = 0.1;
 
     let currentDocument = null;
     let currentColumns = 1;
@@ -536,14 +420,14 @@
     const savedColumns = Number.parseInt(localStorage.getItem("cifraview-columns"), 10);
     const savedZoom = Number.parseFloat(localStorage.getItem("cifraview-zoom"));
     const savedWidth = Number.parseFloat(localStorage.getItem("cifraview-width"));
-    const defaultColumns = window.innerWidth <= 640 ? 1 : 2;
 
-    applyColumns(Number.isInteger(savedColumns) ? savedColumns : defaultColumns, false);
+    applyColumns(Number.isInteger(savedColumns) ? savedColumns : (window.innerWidth <= 640 ? 1 : 2), false);
     applyZoom(Number.isFinite(savedZoom) ? savedZoom : 1, false);
     applyWidth(Number.isFinite(savedWidth) ? savedWidth : 1, false);
 
     openPdfButton.addEventListener("click", () => pdfInput.click());
     changePdfButton.addEventListener("click", () => pdfInput.click());
+    backButton.addEventListener("click", resetApp);
 
     columnSelect.addEventListener("change", async () => {
       applyColumns(Number.parseInt(columnSelect.value, 10), false);
@@ -551,28 +435,27 @@
     });
 
     zoomOutButton.addEventListener("click", async () => {
-      applyZoom(currentZoom - ZOOM_STEP, false);
+      applyZoom(currentZoom - STEP, false);
       await renderAllPages();
     });
 
     zoomInButton.addEventListener("click", async () => {
-      applyZoom(currentZoom + ZOOM_STEP, false);
+      applyZoom(currentZoom + STEP, false);
       await renderAllPages();
     });
 
     widthOutButton.addEventListener("click", async () => {
-      applyWidth(currentWidth - WIDTH_STEP, false);
+      applyWidth(currentWidth - STEP, false);
       await renderAllPages();
     });
 
     widthInButton.addEventListener("click", async () => {
-      applyWidth(currentWidth + WIDTH_STEP, false);
+      applyWidth(currentWidth + STEP, false);
       await renderAllPages();
     });
 
     pdfInput.addEventListener("change", async () => {
       const file = pdfInput.files?.[0];
-
       if (!file) return;
 
       if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
@@ -586,8 +469,8 @@
     });
 
     window.addEventListener("resize", () => {
-      window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
         if (currentDocument) renderAllPages();
       }, 250);
     });
@@ -597,41 +480,32 @@
       document.documentElement.style.setProperty("--columns", currentColumns);
       columnSelect.value = String(currentColumns);
       localStorage.setItem("cifraview-columns", String(currentColumns));
-
       if (rerender && currentDocument) renderAllPages();
     }
 
     function applyZoom(value, rerender = true) {
-      currentZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(value) || 1));
-      currentZoom = Math.round(currentZoom * 10) / 10;
+      currentZoom = Math.round(Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(value) || 1)) * 10) / 10;
       zoomValue.textContent = `${Math.round(currentZoom * 100)}%`;
-      zoomOutButton.disabled = currentZoom <= MIN_ZOOM;
-      zoomInButton.disabled = currentZoom >= MAX_ZOOM;
       localStorage.setItem("cifraview-zoom", String(currentZoom));
-
+      updateDisabledControls(false);
       if (rerender && currentDocument) renderAllPages();
     }
 
     function applyWidth(value, rerender = true) {
-      currentWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, Number(value) || 1));
-      currentWidth = Math.round(currentWidth * 10) / 10;
+      currentWidth = Math.round(Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, Number(value) || 1)) * 10) / 10;
       widthValue.textContent = `${Math.round(currentWidth * 100)}%`;
-      widthOutButton.disabled = currentWidth <= MIN_WIDTH;
-      widthInButton.disabled = currentWidth >= MAX_WIDTH;
       localStorage.setItem("cifraview-width", String(currentWidth));
-
+      updateDisabledControls(false);
       if (rerender && currentDocument) renderAllPages();
     }
 
-    function updatePageWidth() {
-      const viewerStyles = window.getComputedStyle(pdfViewer);
-      const paddingLeft = Number.parseFloat(viewerStyles.paddingLeft) || 0;
-      const paddingRight = Number.parseFloat(viewerStyles.paddingRight) || 0;
-      const gap = Number.parseFloat(viewerStyles.columnGap) || 0;
-      const innerWidth = Math.max(280, pdfViewer.clientWidth - paddingLeft - paddingRight);
-      const totalGap = gap * Math.max(0, currentColumns - 1);
-      const basePageWidth = Math.max(120, (innerWidth - totalGap) / currentColumns);
-      const pageWidth = Math.min(1800, Math.max(100, basePageWidth * currentWidth * currentZoom));
+    function calculatePageWidth() {
+      const styles = getComputedStyle(pdfViewer);
+      const horizontalPadding = (parseFloat(styles.paddingLeft) || 0) + (parseFloat(styles.paddingRight) || 0);
+      const gap = parseFloat(styles.columnGap) || 0;
+      const innerWidth = Math.max(280, pdfViewer.clientWidth - horizontalPadding);
+      const baseWidth = Math.max(120, (innerWidth - gap * Math.max(0, currentColumns - 1)) / currentColumns);
+      const pageWidth = Math.min(1800, Math.max(100, baseWidth * currentWidth * currentZoom));
 
       document.documentElement.style.setProperty("--page-width", `${pageWidth}px`);
       pdfViewer.style.justifyContent = currentWidth * currentZoom < 1 ? "center" : "start";
@@ -653,12 +527,12 @@
           currentDocument = null;
         }
 
-        const fileData = new Uint8Array(await file.arrayBuffer());
-        currentDocument = await pdfjsLib.getDocument({ data: fileData }).promise;
+        const data = new Uint8Array(await file.arrayBuffer());
+        currentDocument = await pdfjsLib.getDocument({ data }).promise;
         await renderAllPages();
       } catch (error) {
         console.error(error);
-        showError("Não foi possível abrir este PDF. Tente outro arquivo.");
+        showError("Não foi possível abrir este PDF.");
       }
     }
 
@@ -666,9 +540,8 @@
       if (!currentDocument) return;
 
       const version = ++renderVersion;
-      const pageWidth = updatePageWidth();
-
-      setControlsDisabled(true);
+      const pageWidth = calculatePageWidth();
+      updateDisabledControls(true);
       pdfViewer.replaceChildren();
       status.classList.remove("error");
       status.textContent = `Renderizando 0 de ${currentDocument.numPages} páginas...`;
@@ -676,7 +549,6 @@
       try {
         for (let pageNumber = 1; pageNumber <= currentDocument.numPages; pageNumber += 1) {
           if (version !== renderVersion) return;
-
           await renderPage(currentDocument, pageNumber, pageWidth);
           status.textContent = `Renderizando ${pageNumber} de ${currentDocument.numPages} páginas...`;
         }
@@ -685,31 +557,28 @@
           status.textContent = `${currentDocument.numPages} página${currentDocument.numPages === 1 ? "" : "s"} — zoom ${Math.round(currentZoom * 100)}% — largura ${Math.round(currentWidth * 100)}%.`;
         }
       } catch (error) {
+        if (version !== renderVersion) return;
         console.error(error);
         showError("Não foi possível renderizar este PDF.");
       } finally {
-        if (version === renderVersion) setControlsDisabled(false);
+        if (version === renderVersion) updateDisabledControls(false);
       }
     }
 
     async function renderPage(pdfDocument, pageNumber, pageWidth) {
       const page = await pdfDocument.getPage(pageNumber);
       const initialViewport = page.getViewport({ scale: 1 });
-      const availableWidth = Math.max(80, pageWidth - 2);
-      const scale = availableWidth / initialViewport.width;
-      const viewport = page.getViewport({ scale });
+      const viewport = page.getViewport({ scale: Math.max(80, pageWidth - 2) / initialViewport.width });
       const outputScale = Math.min(window.devicePixelRatio || 1, 2);
-
       const pageContainer = document.createElement("article");
-      pageContainer.className = "pdf-page";
-      pageContainer.setAttribute("aria-label", `Página ${pageNumber}`);
-
       const pageLabel = document.createElement("span");
-      pageLabel.className = "page-number";
-      pageLabel.textContent = `Página ${pageNumber}`;
-
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d", { alpha: false });
+
+      pageContainer.className = "pdf-page";
+      pageContainer.setAttribute("aria-label", `Página ${pageNumber}`);
+      pageLabel.className = "page-number";
+      pageLabel.textContent = `Página ${pageNumber}`;
 
       canvas.width = Math.floor(viewport.width * outputScale);
       canvas.height = Math.floor(viewport.height * outputScale);
@@ -729,12 +598,34 @@
       page.cleanup();
     }
 
-    function setControlsDisabled(disabled) {
-      columnSelect.disabled = disabled;
-      zoomOutButton.disabled = disabled || currentZoom <= MIN_ZOOM;
-      zoomInButton.disabled = disabled || currentZoom >= MAX_ZOOM;
-      widthOutButton.disabled = disabled || currentWidth <= MIN_WIDTH;
-      widthInButton.disabled = disabled || currentWidth >= MAX_WIDTH;
+    async function resetApp() {
+      renderVersion += 1;
+      updateDisabledControls(true);
+
+      try {
+        if (currentDocument) await currentDocument.destroy();
+      } catch (error) {
+        console.warn("Falha ao encerrar o PDF atual.", error);
+      }
+
+      currentDocument = null;
+      pdfViewer.replaceChildren();
+      status.textContent = "";
+      status.classList.remove("error");
+      fileName.textContent = "Nenhum arquivo";
+      pdfInput.value = "";
+      app.hidden = true;
+      welcome.hidden = false;
+      updateDisabledControls(false);
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    function updateDisabledControls(rendering) {
+      columnSelect.disabled = rendering;
+      zoomOutButton.disabled = rendering || currentZoom <= MIN_ZOOM;
+      zoomInButton.disabled = rendering || currentZoom >= MAX_ZOOM;
+      widthOutButton.disabled = rendering || currentWidth <= MIN_WIDTH;
+      widthInButton.disabled = rendering || currentWidth >= MAX_WIDTH;
     }
 
     function showError(message) {
@@ -742,7 +633,7 @@
       welcome.hidden = true;
       status.classList.add("error");
       status.textContent = message;
-      setControlsDisabled(false);
+      updateDisabledControls(false);
     }
   </script>
 </body>
