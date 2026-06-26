@@ -102,7 +102,7 @@
 
     .primary-button:hover,
     .secondary-button:hover,
-    .zoom-button:hover {
+    .control-button:hover {
       transform: translateY(-1px);
     }
 
@@ -176,22 +176,28 @@
     }
 
     .column-control,
-    .zoom-control {
+    .step-control {
       min-height: 42px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 0 10px;
+      gap: 6px;
+      padding: 0 7px;
       border: 1px solid #4b5563;
       border-radius: 12px;
       background: #1f2937;
       color: #e5e7eb;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       font-weight: 700;
     }
 
+    .control-label {
+      margin-right: 2px;
+      color: #d1d5db;
+      font-size: 0.78rem;
+    }
+
     .column-control select {
-      min-width: 58px;
+      min-width: 56px;
       min-height: 30px;
       padding: 2px 8px;
       border: 1px solid #6b7280;
@@ -201,12 +207,7 @@
       cursor: pointer;
     }
 
-    .zoom-control {
-      gap: 6px;
-      padding: 0 6px;
-    }
-
-    .zoom-button {
+    .control-button {
       width: 32px;
       height: 32px;
       display: grid;
@@ -222,18 +223,18 @@
       transition: transform 160ms ease, background 160ms ease, opacity 160ms ease;
     }
 
-    .zoom-button:hover {
+    .control-button:hover {
       background: #374151;
     }
 
-    .zoom-button:disabled,
+    .control-button:disabled,
     .column-control select:disabled {
       cursor: not-allowed;
       opacity: 0.5;
     }
 
-    .zoom-value {
-      min-width: 52px;
+    .control-value {
+      min-width: 48px;
       text-align: center;
       font-variant-numeric: tabular-nums;
     }
@@ -248,7 +249,7 @@
     }
 
     .status {
-      padding: 16px;
+      padding: 12px 16px;
       text-align: center;
       color: #475569;
       font-weight: 600;
@@ -260,16 +261,16 @@
 
     .pdf-viewer {
       width: 100%;
-      max-width: 1800px;
-      margin: 0 auto;
-      padding: 18px;
+      margin: 0;
+      padding: 14px;
       display: grid;
       grid-template-columns: repeat(var(--columns), var(--page-width));
       align-items: start;
       justify-content: start;
-      gap: 18px;
+      gap: 14px;
       overflow-x: auto;
       overscroll-behavior-inline: contain;
+      scroll-behavior: smooth;
     }
 
     .pdf-page {
@@ -278,16 +279,16 @@
       min-width: var(--page-width);
       display: flex;
       justify-content: center;
-      padding: 10px;
-      border-radius: 12px;
+      padding: 8px;
+      border-radius: 10px;
       background: #cbd5e1;
       box-shadow: 0 8px 22px rgba(15, 23, 42, 0.16);
     }
 
     .page-number {
       position: absolute;
-      top: 16px;
-      left: 16px;
+      top: 13px;
+      left: 13px;
       z-index: 2;
       padding: 4px 8px;
       border-radius: 999px;
@@ -310,7 +311,7 @@
       display: none !important;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1100px) {
       .toolbar {
         flex-wrap: wrap;
       }
@@ -336,16 +337,16 @@
 
       .toolbar {
         gap: 8px;
-        padding: 10px;
+        padding: 9px;
       }
 
       .toolbar-actions {
-        gap: 8px;
+        gap: 7px;
       }
 
       .column-control,
-      .zoom-control {
-        flex: 1;
+      .step-control {
+        flex: 1 1 145px;
         justify-content: space-between;
       }
 
@@ -355,19 +356,81 @@
         font-size: 0.88rem;
       }
 
+      .status {
+        padding: 8px 10px;
+        font-size: 0.82rem;
+      }
+
       .pdf-viewer {
-        padding: 10px;
-        gap: 10px;
+        padding: 7px;
+        gap: 7px;
       }
 
       .pdf-page {
-        padding: 5px;
-        border-radius: 8px;
+        padding: 4px;
+        border-radius: 7px;
       }
 
       .page-number {
-        top: 10px;
-        left: 10px;
+        top: 8px;
+        left: 8px;
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 620px) {
+      .toolbar {
+        flex-wrap: nowrap;
+        gap: 6px;
+        padding: 6px 8px;
+      }
+
+      .brand {
+        flex: 0 1 180px;
+        max-width: 180px;
+      }
+
+      .brand span {
+        font-size: 0.68rem;
+      }
+
+      .toolbar-actions {
+        width: auto;
+        flex: 1;
+        flex-wrap: nowrap;
+        gap: 5px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .toolbar-actions::-webkit-scrollbar {
+        display: none;
+      }
+
+      .column-control,
+      .step-control {
+        min-height: 38px;
+        flex: 0 0 auto;
+      }
+
+      .control-label {
+        display: none;
+      }
+
+      .secondary-button {
+        width: auto;
+        min-height: 38px;
+        padding: 0 10px;
+        white-space: nowrap;
+      }
+
+      .status {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+      }
+
+      .pdf-viewer {
+        padding: 6px;
+        gap: 6px;
       }
     }
   </style>
@@ -397,14 +460,22 @@
       </div>
 
       <div class="toolbar-actions">
-        <div class="zoom-control" aria-label="Controle de zoom">
-          <button id="zoom-out-button" class="zoom-button" type="button" aria-label="Diminuir zoom">−</button>
-          <span id="zoom-value" class="zoom-value">100%</span>
-          <button id="zoom-in-button" class="zoom-button" type="button" aria-label="Aumentar zoom">+</button>
+        <div class="step-control" aria-label="Controle de zoom">
+          <span class="control-label">Zoom</span>
+          <button id="zoom-out-button" class="control-button" type="button" aria-label="Diminuir zoom" title="Diminuir zoom">−</button>
+          <span id="zoom-value" class="control-value">100%</span>
+          <button id="zoom-in-button" class="control-button" type="button" aria-label="Aumentar zoom" title="Aumentar zoom">+</button>
+        </div>
+
+        <div class="step-control" aria-label="Controle de largura das páginas">
+          <span class="control-label">Largura</span>
+          <button id="width-out-button" class="control-button" type="button" aria-label="Estreitar páginas" title="Estreitar páginas">−</button>
+          <span id="width-value" class="control-value">100%</span>
+          <button id="width-in-button" class="control-button" type="button" aria-label="Alargar páginas" title="Alargar páginas">+</button>
         </div>
 
         <label class="column-control" for="column-select">
-          <span>Colunas</span>
+          <span class="control-label">Colunas</span>
           <select id="column-select" aria-label="Quantidade de páginas lado a lado">
             <option value="1">1</option>
             <option value="2">2</option>
@@ -440,6 +511,9 @@
     const zoomOutButton = document.getElementById("zoom-out-button");
     const zoomInButton = document.getElementById("zoom-in-button");
     const zoomValue = document.getElementById("zoom-value");
+    const widthOutButton = document.getElementById("width-out-button");
+    const widthInButton = document.getElementById("width-in-button");
+    const widthValue = document.getElementById("width-value");
     const fileName = document.getElementById("file-name");
     const status = document.getElementById("status");
     const pdfViewer = document.getElementById("pdf-viewer");
@@ -447,19 +521,25 @@
     const MIN_ZOOM = 0.5;
     const MAX_ZOOM = 2;
     const ZOOM_STEP = 0.1;
+    const MIN_WIDTH = 0.7;
+    const MAX_WIDTH = 1.8;
+    const WIDTH_STEP = 0.1;
 
     let currentDocument = null;
     let currentColumns = 1;
     let currentZoom = 1;
+    let currentWidth = 1;
     let renderVersion = 0;
     let resizeTimer = null;
 
     const savedColumns = Number.parseInt(localStorage.getItem("cifraview-columns"), 10);
     const savedZoom = Number.parseFloat(localStorage.getItem("cifraview-zoom"));
+    const savedWidth = Number.parseFloat(localStorage.getItem("cifraview-width"));
     const defaultColumns = window.innerWidth <= 640 ? 1 : 2;
 
     applyColumns(Number.isInteger(savedColumns) ? savedColumns : defaultColumns, false);
     applyZoom(Number.isFinite(savedZoom) ? savedZoom : 1, false);
+    applyWidth(Number.isFinite(savedWidth) ? savedWidth : 1, false);
 
     openPdfButton.addEventListener("click", () => pdfInput.click());
     changePdfButton.addEventListener("click", () => pdfInput.click());
@@ -476,6 +556,16 @@
 
     zoomInButton.addEventListener("click", async () => {
       applyZoom(currentZoom + ZOOM_STEP, false);
+      await renderAllPages();
+    });
+
+    widthOutButton.addEventListener("click", async () => {
+      applyWidth(currentWidth - WIDTH_STEP, false);
+      await renderAllPages();
+    });
+
+    widthInButton.addEventListener("click", async () => {
+      applyWidth(currentWidth + WIDTH_STEP, false);
       await renderAllPages();
     });
 
@@ -521,6 +611,17 @@
       if (rerender && currentDocument) renderAllPages();
     }
 
+    function applyWidth(value, rerender = true) {
+      currentWidth = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, Number(value) || 1));
+      currentWidth = Math.round(currentWidth * 10) / 10;
+      widthValue.textContent = `${Math.round(currentWidth * 100)}%`;
+      widthOutButton.disabled = currentWidth <= MIN_WIDTH;
+      widthInButton.disabled = currentWidth >= MAX_WIDTH;
+      localStorage.setItem("cifraview-width", String(currentWidth));
+
+      if (rerender && currentDocument) renderAllPages();
+    }
+
     function updatePageWidth() {
       const viewerStyles = window.getComputedStyle(pdfViewer);
       const paddingLeft = Number.parseFloat(viewerStyles.paddingLeft) || 0;
@@ -528,10 +629,11 @@
       const gap = Number.parseFloat(viewerStyles.columnGap) || 0;
       const innerWidth = Math.max(280, pdfViewer.clientWidth - paddingLeft - paddingRight);
       const totalGap = gap * Math.max(0, currentColumns - 1);
-      const basePageWidth = Math.max(140, (innerWidth - totalGap) / currentColumns);
-      const pageWidth = Math.max(100, basePageWidth * currentZoom);
+      const basePageWidth = Math.max(120, (innerWidth - totalGap) / currentColumns);
+      const pageWidth = Math.min(1800, Math.max(100, basePageWidth * currentWidth * currentZoom));
 
       document.documentElement.style.setProperty("--page-width", `${pageWidth}px`);
+      pdfViewer.style.justifyContent = currentWidth * currentZoom < 1 ? "center" : "start";
       return pageWidth;
     }
 
@@ -579,7 +681,7 @@
         }
 
         if (version === renderVersion) {
-          status.textContent = `${currentDocument.numPages} página${currentDocument.numPages === 1 ? "" : "s"} carregada${currentDocument.numPages === 1 ? "" : "s"} — zoom ${Math.round(currentZoom * 100)}%.`;
+          status.textContent = `${currentDocument.numPages} página${currentDocument.numPages === 1 ? "" : "s"} — zoom ${Math.round(currentZoom * 100)}% — largura ${Math.round(currentWidth * 100)}%.`;
         }
       } catch (error) {
         console.error(error);
@@ -592,7 +694,7 @@
     async function renderPage(pdfDocument, pageNumber, pageWidth) {
       const page = await pdfDocument.getPage(pageNumber);
       const initialViewport = page.getViewport({ scale: 1 });
-      const availableWidth = Math.max(100, pageWidth - 20);
+      const availableWidth = Math.max(80, pageWidth - 16);
       const scale = availableWidth / initialViewport.width;
       const viewport = page.getViewport({ scale });
       const outputScale = Math.min(window.devicePixelRatio || 1, 2);
@@ -630,6 +732,8 @@
       columnSelect.disabled = disabled;
       zoomOutButton.disabled = disabled || currentZoom <= MIN_ZOOM;
       zoomInButton.disabled = disabled || currentZoom >= MAX_ZOOM;
+      widthOutButton.disabled = disabled || currentWidth <= MIN_WIDTH;
+      widthInButton.disabled = disabled || currentWidth >= MAX_WIDTH;
     }
 
     function showError(message) {
