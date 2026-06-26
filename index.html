@@ -9,6 +9,7 @@
   <style>
     :root {
       --columns: 1;
+      --page-width: 100%;
       color-scheme: light;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
@@ -100,7 +101,8 @@
     }
 
     .primary-button:hover,
-    .secondary-button:hover {
+    .secondary-button:hover,
+    .zoom-button:hover {
       transform: translateY(-1px);
     }
 
@@ -173,7 +175,8 @@
       gap: 10px;
     }
 
-    .column-control {
+    .column-control,
+    .zoom-control {
       min-height: 42px;
       display: flex;
       align-items: center;
@@ -196,6 +199,43 @@
       background: #111827;
       color: #ffffff;
       cursor: pointer;
+    }
+
+    .zoom-control {
+      gap: 6px;
+      padding: 0 6px;
+    }
+
+    .zoom-button {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #6b7280;
+      border-radius: 8px;
+      background: #111827;
+      color: #ffffff;
+      font-size: 1.15rem;
+      font-weight: 800;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, opacity 160ms ease;
+    }
+
+    .zoom-button:hover {
+      background: #374151;
+    }
+
+    .zoom-button:disabled,
+    .column-control select:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .zoom-value {
+      min-width: 52px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
     }
 
     .secondary-button {
@@ -224,15 +264,18 @@
       margin: 0 auto;
       padding: 18px;
       display: grid;
-      grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+      grid-template-columns: repeat(var(--columns), var(--page-width));
       align-items: start;
+      justify-content: start;
       gap: 18px;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
     }
 
     .pdf-page {
       position: relative;
-      min-width: 0;
-      width: 100%;
+      width: var(--page-width);
+      min-width: var(--page-width);
       display: flex;
       justify-content: center;
       padding: 10px;
@@ -267,6 +310,21 @@
       display: none !important;
     }
 
+    @media (max-width: 900px) {
+      .toolbar {
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        flex-basis: 100%;
+      }
+
+      .toolbar-actions {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+    }
+
     @media (max-width: 640px) {
       .welcome {
         padding: 16px;
@@ -277,25 +335,22 @@
       }
 
       .toolbar {
-        flex-wrap: wrap;
         gap: 8px;
         padding: 10px;
       }
 
-      .brand {
-        flex-basis: 100%;
-      }
-
       .toolbar-actions {
-        width: 100%;
+        gap: 8px;
       }
 
-      .column-control {
+      .column-control,
+      .zoom-control {
         flex: 1;
         justify-content: space-between;
       }
 
       .secondary-button {
+        width: 100%;
         padding: 0 11px;
         font-size: 0.88rem;
       }
@@ -342,6 +397,12 @@
       </div>
 
       <div class="toolbar-actions">
+        <div class="zoom-control" aria-label="Controle de zoom">
+          <button id="zoom-out-button" class="zoom-button" type="button" aria-label="Diminuir zoom">−</button>
+          <span id="zoom-value" class="zoom-value">100%</span>
+          <button id="zoom-in-button" class="zoom-button" type="button" aria-label="Aumentar zoom">+</button>
+        </div>
+
         <label class="column-control" for="column-select">
           <span>Colunas</span>
           <select id="column-select" aria-label="Quantidade de páginas lado a lado">
@@ -376,21 +437,46 @@
     const openPdfButton = document.getElementById("open-pdf-button");
     const changePdfButton = document.getElementById("change-pdf-button");
     const columnSelect = document.getElementById("column-select");
+    const zoomOutButton = document.getElementById("zoom-out-button");
+    const zoomInButton = document.getElementById("zoom-in-button");
+    const zoomValue = document.getElementById("zoom-value");
     const fileName = document.getElementById("file-name");
     const status = document.getElementById("status");
     const pdfViewer = document.getElementById("pdf-viewer");
 
+    const MIN_ZOOM = 0.5;
+    const MAX_ZOOM = 2;
+    const ZOOM_STEP = 0.1;
+
     let currentDocument = null;
+    let currentColumns = 1;
+    let currentZoom = 1;
+    let renderVersion = 0;
+    let resizeTimer = null;
 
     const savedColumns = Number.parseInt(localStorage.getItem("cifraview-columns"), 10);
+    const savedZoom = Number.parseFloat(localStorage.getItem("cifraview-zoom"));
     const defaultColumns = window.innerWidth <= 640 ? 1 : 2;
-    applyColumns(Number.isInteger(savedColumns) ? savedColumns : defaultColumns);
+
+    applyColumns(Number.isInteger(savedColumns) ? savedColumns : defaultColumns, false);
+    applyZoom(Number.isFinite(savedZoom) ? savedZoom : 1, false);
 
     openPdfButton.addEventListener("click", () => pdfInput.click());
     changePdfButton.addEventListener("click", () => pdfInput.click());
 
-    columnSelect.addEventListener("change", () => {
-      applyColumns(Number.parseInt(columnSelect.value, 10));
+    columnSelect.addEventListener("change", async () => {
+      applyColumns(Number.parseInt(columnSelect.value, 10), false);
+      await renderAllPages();
+    });
+
+    zoomOutButton.addEventListener("click", async () => {
+      applyZoom(currentZoom - ZOOM_STEP, false);
+      await renderAllPages();
+    });
+
+    zoomInButton.addEventListener("click", async () => {
+      applyZoom(currentZoom + ZOOM_STEP, false);
+      await renderAllPages();
     });
 
     pdfInput.addEventListener("change", async () => {
@@ -408,15 +494,50 @@
       pdfInput.value = "";
     });
 
-    function applyColumns(value) {
-      const columns = Math.min(6, Math.max(1, Number(value) || 1));
-      document.documentElement.style.setProperty("--columns", columns);
-      columnSelect.value = String(columns);
-      localStorage.setItem("cifraview-columns", String(columns));
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        if (currentDocument) renderAllPages();
+      }, 250);
+    });
+
+    function applyColumns(value, rerender = true) {
+      currentColumns = Math.min(6, Math.max(1, Number(value) || 1));
+      document.documentElement.style.setProperty("--columns", currentColumns);
+      columnSelect.value = String(currentColumns);
+      localStorage.setItem("cifraview-columns", String(currentColumns));
+
+      if (rerender && currentDocument) renderAllPages();
+    }
+
+    function applyZoom(value, rerender = true) {
+      currentZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(value) || 1));
+      currentZoom = Math.round(currentZoom * 10) / 10;
+      zoomValue.textContent = `${Math.round(currentZoom * 100)}%`;
+      zoomOutButton.disabled = currentZoom <= MIN_ZOOM;
+      zoomInButton.disabled = currentZoom >= MAX_ZOOM;
+      localStorage.setItem("cifraview-zoom", String(currentZoom));
+
+      if (rerender && currentDocument) renderAllPages();
+    }
+
+    function updatePageWidth() {
+      const viewerStyles = window.getComputedStyle(pdfViewer);
+      const paddingLeft = Number.parseFloat(viewerStyles.paddingLeft) || 0;
+      const paddingRight = Number.parseFloat(viewerStyles.paddingRight) || 0;
+      const gap = Number.parseFloat(viewerStyles.columnGap) || 0;
+      const innerWidth = Math.max(280, pdfViewer.clientWidth - paddingLeft - paddingRight);
+      const totalGap = gap * Math.max(0, currentColumns - 1);
+      const basePageWidth = Math.max(140, (innerWidth - totalGap) / currentColumns);
+      const pageWidth = Math.max(100, basePageWidth * currentZoom);
+
+      document.documentElement.style.setProperty("--page-width", `${pageWidth}px`);
+      return pageWidth;
     }
 
     async function loadPdf(file) {
       try {
+        renderVersion += 1;
         welcome.hidden = true;
         app.hidden = false;
         pdfViewer.replaceChildren();
@@ -431,25 +552,47 @@
 
         const fileData = new Uint8Array(await file.arrayBuffer());
         currentDocument = await pdfjsLib.getDocument({ data: fileData }).promise;
-
-        status.textContent = `Renderizando 0 de ${currentDocument.numPages} páginas...`;
-
-        for (let pageNumber = 1; pageNumber <= currentDocument.numPages; pageNumber += 1) {
-          await renderPage(currentDocument, pageNumber);
-          status.textContent = `Renderizando ${pageNumber} de ${currentDocument.numPages} páginas...`;
-        }
-
-        status.textContent = `${currentDocument.numPages} página${currentDocument.numPages === 1 ? "" : "s"} carregada${currentDocument.numPages === 1 ? "" : "s"}.`;
+        await renderAllPages();
       } catch (error) {
         console.error(error);
         showError("Não foi possível abrir este PDF. Tente outro arquivo.");
       }
     }
 
-    async function renderPage(pdfDocument, pageNumber) {
+    async function renderAllPages() {
+      if (!currentDocument) return;
+
+      const version = ++renderVersion;
+      const pageWidth = updatePageWidth();
+
+      setControlsDisabled(true);
+      pdfViewer.replaceChildren();
+      status.classList.remove("error");
+      status.textContent = `Renderizando 0 de ${currentDocument.numPages} páginas...`;
+
+      try {
+        for (let pageNumber = 1; pageNumber <= currentDocument.numPages; pageNumber += 1) {
+          if (version !== renderVersion) return;
+
+          await renderPage(currentDocument, pageNumber, pageWidth);
+          status.textContent = `Renderizando ${pageNumber} de ${currentDocument.numPages} páginas...`;
+        }
+
+        if (version === renderVersion) {
+          status.textContent = `${currentDocument.numPages} página${currentDocument.numPages === 1 ? "" : "s"} carregada${currentDocument.numPages === 1 ? "" : "s"} — zoom ${Math.round(currentZoom * 100)}%.`;
+        }
+      } catch (error) {
+        console.error(error);
+        showError("Não foi possível renderizar este PDF.");
+      } finally {
+        if (version === renderVersion) setControlsDisabled(false);
+      }
+    }
+
+    async function renderPage(pdfDocument, pageNumber, pageWidth) {
       const page = await pdfDocument.getPage(pageNumber);
       const initialViewport = page.getViewport({ scale: 1 });
-      const availableWidth = Math.max(280, Math.min(pdfViewer.clientWidth - 36, 900));
+      const availableWidth = Math.max(100, pageWidth - 20);
       const scale = availableWidth / initialViewport.width;
       const viewport = page.getViewport({ scale });
       const outputScale = Math.min(window.devicePixelRatio || 1, 2);
@@ -483,11 +626,18 @@
       page.cleanup();
     }
 
+    function setControlsDisabled(disabled) {
+      columnSelect.disabled = disabled;
+      zoomOutButton.disabled = disabled || currentZoom <= MIN_ZOOM;
+      zoomInButton.disabled = disabled || currentZoom >= MAX_ZOOM;
+    }
+
     function showError(message) {
       app.hidden = false;
       welcome.hidden = true;
       status.classList.add("error");
       status.textContent = message;
+      setControlsDisabled(false);
     }
   </script>
 </body>
