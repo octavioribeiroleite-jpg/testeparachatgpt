@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="CifraView">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22345a"/>
+      <stop offset="1" stop-color="#111722"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="12" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="118" fill="#090d12"/>
+  <rect x="72" y="72" width="368" height="368" rx="105" fill="url(#bg)" stroke="#5b8cff" stroke-width="8"/>
+  <g fill="#cfe0ff" filter="url(#glow)">
+    <path d="M210 190l136-34v34l-136 34z"/>
+    <rect x="210" y="190" width="22" height="156" rx="8"/>
+    <rect x="324" y="156" width="22" height="148" rx="8"/>
+    <ellipse cx="190" cy="350" rx="48" ry="34" transform="rotate(-12 190 350)"/>
+    <ellipse cx="304" cy="308" rx="48" ry="34" transform="rotate(-12 304 308)"/>
+  </g>
+</svg>
