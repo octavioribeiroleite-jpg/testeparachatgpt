@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#090d12">
   <meta name="description" content="Visualizador elegante de PDFs para cifras, partituras e repertórios.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CifraView">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/icon-192.svg">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon-192.svg">
   <title>CifraView — Visualizador de PDF</title>
 
   <style>
@@ -308,6 +314,78 @@
       margin: 18px 0 0;
       color: #68798e;
       font-size: 0.78rem;
+    }
+
+    .install-card {
+      position: relative;
+      margin-top: 15px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 42px 13px 13px;
+      border: 1px solid rgba(91, 140, 255, 0.28);
+      border-radius: 17px;
+      background: linear-gradient(135deg, rgba(91, 140, 255, 0.13), rgba(17, 23, 34, 0.94));
+      text-align: left;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      animation: cardEnter 280ms ease-out both;
+    }
+
+    .install-card-icon {
+      width: 45px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: rgba(91, 140, 255, 0.16);
+      overflow: hidden;
+    }
+
+    .install-card-icon img { width: 100%; height: 100%; }
+    .install-card-content { min-width: 0; }
+    .install-card-content strong, .install-card-content span { display: block; }
+    .install-card-content strong { color: #f5f7fa; font-size: 0.9rem; }
+    .install-card-content span { margin-top: 3px; color: #93a4b7; font-size: 0.75rem; line-height: 1.4; }
+
+    .install-button {
+      min-height: 38px;
+      padding: 0 15px;
+      border: 1px solid rgba(121, 162, 255, 0.48);
+      border-radius: 11px;
+      background: linear-gradient(180deg, #79a2ff, #5b8cff);
+      color: #fff;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .install-close {
+      position: absolute;
+      top: 8px;
+      right: 9px;
+      width: 27px;
+      height: 27px;
+      border: 0;
+      background: transparent;
+      color: #8494a8;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .ios-install-steps {
+      grid-column: 1 / -1;
+      margin: 0;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.035);
+      color: #b8c6d8;
+      font-size: 0.75rem;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 520px) {
+      .install-card { grid-template-columns: auto minmax(0, 1fr); }
+      .install-button { grid-column: 1 / -1; width: 100%; }
     }
 
     /* Visualizador */
@@ -750,6 +828,17 @@
         </div>
       </div>
 
+      <aside id="install-card" class="install-card" hidden>
+        <div class="install-card-icon"><img src="./icons/icon-192.svg" alt=""></div>
+        <div class="install-card-content">
+          <strong>Instale o CifraView</strong>
+          <span id="install-description">Abra suas cifras como um aplicativo, direto da tela inicial.</span>
+        </div>
+        <button id="install-button" class="install-button" type="button">Instalar</button>
+        <button id="install-close" class="install-close" type="button" aria-label="Fechar sugestão de instalação">×</button>
+        <p id="ios-install-steps" class="ios-install-steps" hidden>Toque em <strong>Compartilhar</strong> e depois em <strong>Adicionar à Tela de Início</strong>.</p>
+      </aside>
+
       <p class="privacy-note">Seu arquivo é processado localmente e permanece no aparelho.</p>
     </div>
   </section>
@@ -839,6 +928,13 @@
     const progressBar = document.getElementById("progress-bar");
     const pdfViewer = document.getElementById("pdf-viewer");
 
+    const installCard = document.getElementById("install-card");
+    const installButton = document.getElementById("install-button");
+    const installClose = document.getElementById("install-close");
+    const installDescription = document.getElementById("install-description");
+    const iosInstallSteps = document.getElementById("ios-install-steps");
+    let deferredInstallPrompt = null;
+
     const MIN_ZOOM = 0.5;
     const MAX_ZOOM = 2;
     const STEP = 0.1;
@@ -861,6 +957,44 @@
     applyColumns(Number.isInteger(savedColumns) ? savedColumns : (window.innerWidth <= 640 ? 1 : 2), false);
     applyZoom(Number.isFinite(savedZoom) ? savedZoom : 1, false);
     applyWidth(Number.isFinite(savedWidth) ? savedWidth : 1, false);
+
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isInstalled = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+    function canShowInstallCard() {
+      return !isInstalled && sessionStorage.getItem("cifraview-install-dismissed") !== "true";
+    }
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      if (canShowInstallCard()) installCard.hidden = false;
+    });
+
+    installButton.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      await deferredInstallPrompt.prompt();
+      const choice = await deferredInstallPrompt.userChoice;
+      if (choice.outcome === "accepted") installCard.hidden = true;
+      deferredInstallPrompt = null;
+    });
+
+    installClose.addEventListener("click", () => {
+      installCard.hidden = true;
+      sessionStorage.setItem("cifraview-install-dismissed", "true");
+    });
+
+    window.addEventListener("appinstalled", () => {
+      installCard.hidden = true;
+      deferredInstallPrompt = null;
+    });
+
+    if (isIOS && canShowInstallCard()) {
+      installCard.hidden = false;
+      installButton.hidden = true;
+      iosInstallSteps.hidden = false;
+      installDescription.textContent = "Adicione o CifraView à Tela de Início.";
+    }
 
     openPdfButton.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -1210,6 +1344,14 @@
       clearTimeout(statusTimer);
       statusTimer = setTimeout(() => status.classList.remove("visible"), 3500);
     }
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch((error) => {
+          console.error("Falha ao registrar o service worker:", error);
+        });
+      });
+    }
+
   </script>
 </body>
 </html>
