@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - .github/workflows/apply-pwa.yml
+      - scripts/apply-pwa.py
+      - scripts/apply-update-button.py
   workflow_dispatch:
 
 permissions:
@@ -16,10 +18,12 @@ jobs:
       - name: Baixar repositório
         uses: actions/checkout@v4
 
-      - name: Aplicar alterações no index
-        run: python scripts/apply-pwa.py
+      - name: Aplicar recursos do PWA
+        run: |
+          python scripts/apply-pwa.py
+          python scripts/apply-update-button.py
 
-      - name: Salvar integração PWA
+      - name: Salvar integração
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -27,6 +31,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nenhuma alteração necessária."
           else
-            git commit -m "Integrar card de instalação PWA"
+            git commit -m "Integrar botão permanente de atualização"
             git push
           fi
